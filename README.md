@@ -12,72 +12,27 @@ Projekt w Rust do szybkiego obliczania CRC Modbus RTU z możliwością porównan
   - Równoległe przetwarzanie z Rayon dla dużych iteracji
 - ✅ **Pomiar wydajności** - mierzenie czasu i CRC/s
 
-## Kompilacja
+## Wymagania
 
-### Wymagania
+- Rust (najnowsza stabilna wersja)
+- Na macOS: Xcode Command Line Tools mogą być wymagane dla niektórych zależności
+
 ```bash
-# Zainstaluj Xcode Command Line Tools (macOS)
+# Zainstaluj Xcode Command Line Tools (tylko macOS)
 xcode-select --install
-
-# Opcjonalnie: deps dla Windows cross-compilation
-make install-deps
 ```
 
-### Podstawowa kompilacja
-```bash
-# Build release version dla maksymalnej wydajności
-cargo build --release
+## Instalacja i uruchomienie
 
-# Lub użyj Makefile
-make build-release
-```
 
-### Tworzenie plików wykonywalnych
-
-#### macOS - natywne binaria
-```bash
-# Automatycznie z script
-make build-macos
-
-# Lub ręcznie
-./build.sh
-
-# Wynik: folder dist/ z portable aplikacją
-```
-
-#### Windows - pliki .exe  
-```bash
-# Cross-compile do Windows
-make build-windows
-
-# Lub ręcznie  
-./build_windows.sh
-
-# Wynik: folder dist_windows/ z .exe i .bat
-```
-
-#### Wszystkie platformy
-```bash
-# Stwórz archiwa dla wszystkich platform
-make package-all
-
-# Wynik:
-# - crc_calculator_macos.tar.gz
-# - crc_calculator_windows.zip
-```
-
-## Użytkowanie
-
-### Wersja konsolowa
-
+### Aplikacja konsolowa
 ```bash
 # Uruchom aplikację konsolową
-cargo run --bin console --release
-# lub
-make run-console
+cargo run --release
 
-# Lub bezpośrednio (po build)
-./target/release/console
+# Lub zbuduj i uruchom osobno
+cargo build --release
+./target/release/rust_crc_project
 ```
 
 Przykład użycia:
@@ -99,10 +54,9 @@ Wybierz tryb:
 ```bash
 # Uruchom aplikację GUI
 cargo run --bin gui --release
-# lub
-make run-gui
 
-# Lub bezpośrednio (po build)
+# Lub zbuduj i uruchom osobno
+cargo build --release
 ./target/release/gui
 ```
 
@@ -128,14 +82,6 @@ GUI oferuje:
 - Automatyczne dla > 100,000 iteracji
 - Podział na batche dla lepszej balansacji obciążenia
 
-## Przykładowe dane do testów
-
-| Dane HEX | Opis |
-|----------|------|
-| `01 04 00 00 00 0A` | Modbus Read Input Registers |
-| `01 03 00 01 00 02` | Modbus Read Holding Registers |
-| `AA BB CC DD` | Test data |
-
 ## Wydajność
 
 Na współczesnym CPU można oczekiwać:
@@ -143,27 +89,27 @@ Na współczesnym CPU można oczekiwać:
 - **~10-20% boost** dla zoptymalizowanej wersji
 - **Liniowe skalowanie** z liczbą rdzeni dla dużych iteracji
 
-## Struktura projektu
+## Dodatkowe komendy
 
-```
-src/
-├── lib.rs          # Shared CRC functions & optimizations
-├── main.rs         # Console application
-└── gui.rs          # GUI application
+```bash
+# Uruchom testy
+cargo test
 
-build.sh            # macOS build script
-build_windows.sh    # Windows cross-compile script
-Makefile            # Build automation
+# Sprawdź kod (linting)
+cargo clippy
+
+# Formatowanie kodu
+cargo fmt
+
+# Uruchom w trybie deweloperskim (szybsza kompilacja)
+cargo run
+cargo run --bin gui
+
+# Sprawdź zależności
+cargo tree
 ```
 
 ## Zależności
 
 - `rayon` - Równoległe przetwarzanie
 - `egui` + `eframe` - GUI framework
-
-## Plany rozwoju
-
-- [ ] SIMD optymalizacje (AVX2/NEON)
-- [ ] Benchmark suite z różnymi rozmiarami danych
-- [ ] Export wyników do CSV
-- [ ] WebAssembly version dla przeglądarki 

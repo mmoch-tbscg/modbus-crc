@@ -36,7 +36,6 @@ impl eframe::App for CrcApp {
             ui.separator();
             ui.add_space(15.0);
             
-            // Input section
             ui.horizontal(|ui| {
                 ui.label("📝 Sekwencja bajtów (HEX):");
                 ui.add(egui::TextEdit::singleline(&mut self.hex_input)
@@ -47,7 +46,6 @@ impl eframe::App for CrcApp {
             
             ui.add_space(10.0);
             
-            // Iterations input
             ui.horizontal(|ui| {
                 ui.label("🔢 Liczba powtórzeń:");
                 ui.add(egui::TextEdit::singleline(&mut self.iterations_input)
@@ -58,15 +56,13 @@ impl eframe::App for CrcApp {
             
             ui.add_space(10.0);
             
-            // Optimization option
             ui.horizontal(|ui| {
                 ui.checkbox(&mut self.use_optimized, "⚡ Użyj zoptymalizowanej wersji");
                 ui.label("(16-byte unrolling + równoległość)");
             });
             
             ui.add_space(15.0);
-            
-            // Calculate button
+                        
             let calc_button = egui::Button::new(if self.is_calculating { 
                 "⏳ Obliczanie..." 
             } else { 
@@ -77,7 +73,6 @@ impl eframe::App for CrcApp {
                 self.calculate_crc();
             }
             
-            // Progress indicator
             if self.is_calculating {
                 ui.add_space(5.0);
                 ui.horizontal(|ui| {
@@ -88,7 +83,6 @@ impl eframe::App for CrcApp {
             
             ui.add_space(15.0);
             
-            // Error message
             if !self.error_message.is_empty() {
                 ui.horizontal(|ui| {
                     ui.colored_label(egui::Color32::RED, "❌");
@@ -97,14 +91,12 @@ impl eframe::App for CrcApp {
                 ui.add_space(10.0);
             }
             
-            // Results section
             if let Some(result) = &self.result {
                 ui.separator();
                 ui.add_space(10.0);
                 ui.heading("📊 Wyniki");
                 ui.add_space(10.0);
                 
-                // Results in a nice grid
                 egui::Grid::new("results_grid")
                     .num_columns(2)
                     .spacing([20.0, 8.0])
@@ -148,7 +140,6 @@ impl eframe::App for CrcApp {
             ui.separator();
             ui.add_space(10.0);
             
-            // Example data section
             ui.heading("📋 Przykładowe dane");
             ui.add_space(10.0);
             
@@ -184,7 +175,6 @@ impl eframe::App for CrcApp {
             
             ui.add_space(15.0);
             
-            // Info section
             ui.separator();
             ui.add_space(10.0);
             ui.horizontal(|ui| {
@@ -200,7 +190,6 @@ impl eframe::App for CrcApp {
             }
         });
         
-        // Request repaint if calculating
         if self.is_calculating {
             ctx.request_repaint();
         }
@@ -212,7 +201,6 @@ impl CrcApp {
         self.error_message.clear();
         self.is_calculating = true;
         
-        // Parse HEX input
         let data = match parse_hex_input(&self.hex_input) {
             Ok(d) => d,
             Err(e) => {
@@ -228,7 +216,6 @@ impl CrcApp {
             return;
         }
         
-        // Parse iterations
         let iterations: u64 = match self.iterations_input.trim().parse() {
             Ok(num) => {
                 if !(1..=1_000_000_000).contains(&num) {
@@ -245,7 +232,6 @@ impl CrcApp {
             }
         };
         
-        // Calculate CRC
         let start = Instant::now();
         let crc_val = compute_batch_crcs_optimized(&data, iterations, self.use_optimized);
         let duration = start.elapsed();
