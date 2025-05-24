@@ -35,7 +35,8 @@ pub const CRC_TABLE: [u16; 256] = [
     0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040,
 ];
 
-// Zoptymalizowana wersja z większym unrolling
+// Commented out optimized version - using simple version only
+/*
 #[inline(always)]
 pub fn compute_modbus_crc_optimized(data: &[u8]) -> u16 {
     let mut crc = 0xFFFFu16;
@@ -75,6 +76,7 @@ pub fn compute_modbus_crc_optimized(data: &[u8]) -> u16 {
 
     crc
 }
+*/
 
 #[inline(always)]
 pub fn compute_modbus_crc(data: &[u8]) -> u16 {
@@ -100,19 +102,17 @@ pub fn compute_modbus_crc(data: &[u8]) -> u16 {
     crc
 }
 
-pub fn compute_batch_crcs_optimized(data: &[u8], iterations: u64, use_optimized: bool) -> u16 {
+pub fn compute_batch_crcs_optimized(data: &[u8], iterations: u64, _use_optimized: bool) -> u16 {
+    // Simple serial processing for small iteration counts
     if iterations < 100_000 {
         let mut crc = 0;
         for _ in 0..iterations {
-            crc = if use_optimized {
-                compute_modbus_crc_optimized(data)
-            } else {
-                compute_modbus_crc(data)
-            };
+            crc = compute_modbus_crc(data);
         }
         return crc;
     }
 
+    // Parallel processing for larger iteration counts
     const BATCH_SIZE: u64 = 100_000;
     let num_batches = (iterations + BATCH_SIZE - 1) / BATCH_SIZE;
     
@@ -127,11 +127,7 @@ pub fn compute_batch_crcs_optimized(data: &[u8], iterations: u64, use_optimized:
             
             let mut last_crc = 0;
             for _ in 0..batch_iterations {
-                last_crc = if use_optimized {
-                    compute_modbus_crc_optimized(data)
-                } else {
-                    compute_modbus_crc(data)
-                };
+                last_crc = compute_modbus_crc(data);
             }
             last_crc
         })

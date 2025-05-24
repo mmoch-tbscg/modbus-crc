@@ -39,41 +39,18 @@ fn main() {
         }
     };
 
-    println!("Wybierz tryb:");
-    println!("1) Oryginalny algorytm (8-byte unrolling)");
-    println!("2) Zoptymalizowany algorytm (16-byte unrolling)");
-    println!("3) Porównanie obydwu");
-    
-    let mut mode_str = String::new();
-    if let Err(e) = io::stdin().read_line(&mut mode_str) {
-        eprintln!("Błąd odczytu linii: {}", e);
-        return;
-    }
-    
-    match mode_str.trim() {
-        "1" => run_single_test(&data, n, false, "Oryginalny"),
-        "2" => run_single_test(&data, n, true, "Zoptymalizowany"),
-        "3" => {
-            println!("\n=== PORÓWNANIE WYDAJNOŚCI ===");
-            run_single_test(&data, n, false, "Oryginalny");
-            run_single_test(&data, n, true, "Zoptymalizowany");
-        }
-        _ => {
-            eprintln!("Nieprawidłowy wybór. Używam trybu oryginalnego.");
-            run_single_test(&data, n, false, "Oryginalny");
-        }
-    }
+    println!("\n=== OBLICZANIE CRC ===");
+    run_crc_test(&data, n);
 }
 
-fn run_single_test(data: &[u8], n: u64, use_optimized: bool, name: &str) {
+fn run_crc_test(data: &[u8], n: u64) {
     let start = Instant::now();
-    let crc_val = compute_batch_crcs_optimized(data, n, use_optimized);
+    let crc_val = compute_batch_crcs_optimized(data, n, false);
     let duration = start.elapsed();
 
     let crc_lsb = (crc_val & 0xFF) as u8;
     let crc_msb = (crc_val >> 8) as u8;
 
-    println!("\n--- {} ---", name);
     println!("CRC (Modbus RTU format): {:02X} {:02X}", crc_lsb, crc_msb);
     println!("CRC (hex): 0x{:04X}", crc_val);
     println!("Czas dla {} iteracji: {:.3} ms", n, duration.as_secs_f64() * 1000.0);
@@ -81,5 +58,9 @@ fn run_single_test(data: &[u8], n: u64, use_optimized: bool, name: &str) {
     if n > 0 {
         let ops_per_sec = n as f64 / duration.as_secs_f64();
         println!("Wydajność: {:.0} CRC/s", ops_per_sec);
+    }
+    
+    if n >= 100_000 {
+        println!("Tryb: Równoległe przetwarzanie");
     }
 }

@@ -21,7 +21,6 @@ fn main() -> Result<(), eframe::Error> {
 struct CrcApp {
     hex_input: String,
     iterations_input: String,
-    use_optimized: bool,
     result: Option<CrcResult>,
     error_message: String,
     is_calculating: bool,
@@ -52,13 +51,6 @@ impl eframe::App for CrcApp {
                     .desired_width(150.0)
                     .hint_text("1000000"));
                 ui.label("(1 do 1,000,000,000)");
-            });
-            
-            ui.add_space(10.0);
-            
-            ui.horizontal(|ui| {
-                ui.checkbox(&mut self.use_optimized, "⚡ Użyj zoptymalizowanej wersji");
-                ui.label("(16-byte unrolling + równoległość)");
             });
             
             ui.add_space(15.0);
@@ -179,7 +171,7 @@ impl eframe::App for CrcApp {
             ui.add_space(10.0);
             ui.horizontal(|ui| {
                 ui.label("💡");
-                ui.label("Optymalizacja automatycznie włącza równoległe przetwarzanie dla >100k iteracji");
+                ui.label("Automatyczne równoległe przetwarzanie dla >100k iteracji");
             });
             
             if let Some(calc_time) = self.last_calculation_time {
@@ -233,7 +225,7 @@ impl CrcApp {
         };
         
         let start = Instant::now();
-        let crc_val = compute_batch_crcs_optimized(&data, iterations, self.use_optimized);
+        let crc_val = compute_batch_crcs_optimized(&data, iterations, false);
         let duration = start.elapsed();
         let duration_ms = duration.as_secs_f64() * 1000.0;
         
