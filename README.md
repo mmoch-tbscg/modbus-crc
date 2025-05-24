@@ -1,115 +1,114 @@
 # CRC Modbus RTU Calculator
 
-Projekt w Rust do szybkiego obliczania CRC Modbus RTU z możliwością porównania wydajności różnych implementacji.
+A Rust project for fast Modbus RTU CRC calculation with performance comparison capabilities of different implementations.
 
-## Funkcje
+## Features
 
-- ✅ **Wersja konsolowa** - tryb interaktywny z porównaniem wydajności
-- ✅ **Aplikacja GUI** - proste graficzne UI
-- ✅ **Optymalizacje wydajności**:
-  - Oryginalny algorytm (8-byte unrolling)
-  - Zoptymalizowany algorytm (16-byte unrolling + unsafe pointers)
-  - Równoległe przetwarzanie z Rayon dla dużych iteracji
-- ✅ **Pomiar wydajności** - mierzenie czasu i CRC/s
+- ✅ **Console version** - interactive mode with performance comparison
+- ✅ **GUI application** - simple graphical user interface
+- ✅ **Performance optimizations**:
+  - Original algorithm (8-byte unrolling)
+  - Optimized algorithm (16-byte unrolling + unsafe pointers)
+  - Parallel processing with Rayon for large iterations
+- ✅ **Performance measurement** - timing and CRC/s metrics
 
-## Wymagania
+## Requirements
 
-- Rust (najnowsza stabilna wersja)
-- Na macOS: Xcode Command Line Tools mogą być wymagane dla niektórych zależności
+- Rust (latest stable version)
+- On macOS: Xcode Command Line Tools may be required for some dependencies
 
 ```bash
-# Zainstaluj Xcode Command Line Tools (tylko macOS)
+# Install Xcode Command Line Tools (macOS only)
 xcode-select --install
 ```
 
-## Instalacja i uruchomienie
+## Installation and Usage
 
-
-### Aplikacja konsolowa
+### Console Application
 ```bash
-# Uruchom aplikację konsolową
+# Run the console application
 cargo run --release
 
-# Lub zbuduj i uruchom osobno
+# Or build and run separately
 cargo build --release
 ./target/release/rust_crc_project
 ```
 
-Przykład użycia:
+Usage example:
 ```
-Podaj sekwencję bajtów (HEX, spacja oddziela):
+Enter byte sequence (HEX, space separated):
 01 04 00 00 00 0A
 
-Podaj liczbę powtórzeń (1 do 1000000000):
+Enter number of repetitions (1 to 1000000000):
 1000000
 
-Wybierz tryb:
-1) Oryginalny algorytm (8-byte unrolling)
-2) Zoptymalizowany algorytm (16-byte unrolling)
-3) Porównanie obydwu
+Choose mode:
+1) Original algorithm (8-byte unrolling)
+2) Optimized algorithm (16-byte unrolling)
+3) Compare both
 ```
 
-### Aplikacja GUI
+### GUI Application
 
 ```bash
-# Uruchom aplikację GUI
+# Run the GUI application
 cargo run --bin gui --release
 
-# Lub zbuduj i uruchom osobno
+# Or build and run separately
 cargo build --release
 ./target/release/gui
 ```
 
-GUI oferuje:
-- 📝 Pole do wprowadzania danych HEX
-- 🔢 Pole dla liczby iteracji
-- ⚙️ Checkbox do wyboru zoptymalizowanej wersji
-- 📊 Wyświetlanie wyników (CRC w różnych formatach + wydajność)
-- 🎯 Przyciski z przykładowymi danymi
+The GUI offers:
+- 📝 HEX data input field
+- 🔢 Iteration count field
+- ⚙️ Checkbox to select optimized version
+- 📊 Results display (CRC in various formats + performance)
+- 🎯 Buttons with sample data
 
-## Optymalizacje
+## Optimizations
 
-### 1. **16-byte unrolling** (vs oryginalny 8-byte)
-- Większe bloki danych przetwarzane na raz
-- Lepsza utylizacja cache CPU
-- Użycie `unsafe` dla szybszego dostępu do pamięci
+### 1. **16-byte unrolling** (vs original 8-byte)
+- Larger data blocks processed at once
+- Better CPU cache utilization
+- Using `unsafe` for faster memory access
 
-### 2. **Unikanie klonowania danych**
-- Współdzielenie referencji zamiast `Arc::clone`
-- Mniejsze zużycie pamięci
+### 2. **Avoiding data cloning**
+- Sharing references instead of `Arc::clone`
+- Lower memory usage
 
-### 3. **Równoległe przetwarzanie**
-- Automatyczne dla > 100,000 iteracji
-- Podział na batche dla lepszej balansacji obciążenia
+### 3. **Parallel processing**
+- Automatic for > 100,000 iterations
+- Batch splitting for better load balancing
 
-## Wydajność
+## Performance
 
-Na współczesnym CPU można oczekiwać:
-- **~1-5 milionów CRC/s** dla oryginalnej wersji
-- **~10-20% boost** dla zoptymalizowanej wersji
-- **Liniowe skalowanie** z liczbą rdzeni dla dużych iteracji
+On modern CPUs you can expect:
+- **~1-5 million CRC/s** for the original version
+- **~10-20% boost** for the optimized version
+- **Linear scaling** with number of cores for large iterations
 
-## Dodatkowe komendy
+## Additional Commands
 
 ```bash
-# Uruchom testy
+# Run tests
 cargo test
 
-# Sprawdź kod (linting)
+# Check code (linting)
 cargo clippy
 
-# Formatowanie kodu
+# Format code
 cargo fmt
 
-# Uruchom w trybie deweloperskim (szybsza kompilacja)
+# Run in development mode (faster compilation)
 cargo run
 cargo run --bin gui
 
-# Sprawdź zależności
+# Check dependencies
 cargo tree
 ```
 
-## Zależności
+## Dependencies
 
-- `rayon` - Równoległe przetwarzanie
+- `rayon` - Parallel processing
 - `egui` + `eframe` - GUI framework
