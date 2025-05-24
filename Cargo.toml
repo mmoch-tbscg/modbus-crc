@@ -1,0 +1,17 @@
+[package]
+name = "rust_crc_project"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies] 
+rayon = "1.10.0"
+eframe = "0.28.0"
+egui = "0.28.0"
+
+[[bin]]
+name = "console"
+path = "src/main.rs"
+
+[[bin]]
+name = "gui"
+path = "src/gui.rs"

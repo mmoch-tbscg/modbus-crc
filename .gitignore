@@ -1,0 +1,30 @@
+# Rust
+/target/
+Cargo.lock
+
+# Build artifacts
+/dist/
+/dist_windows/
+*.tar.gz
+*.zip
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.log 
