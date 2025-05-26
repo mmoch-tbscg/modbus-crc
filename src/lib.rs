@@ -35,48 +35,6 @@ pub const CRC_TABLE: [u16; 256] = [
     0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040,
 ];
 
-// Commented out optimized version - using simple version only
-/*
-#[inline(always)]
-pub fn compute_modbus_crc_optimized(data: &[u8]) -> u16 {
-    let mut crc = 0xFFFFu16;
-    let len = data.len();
-    let mut i = 0;
-
-    // Process 16 bytes at once for better cache utilization
-    while i + 16 <= len {
-        unsafe {
-            let ptr = data.as_ptr().add(i);
-            
-            // Manual unrolling for 16 bytes
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr)) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(1))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(2))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(3))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(4))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(5))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(6))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(7))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(8))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(9))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(10))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(11))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(12))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(13))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(14))) & 0xFF) as usize];
-            crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(*ptr.add(15))) & 0xFF) as usize];
-        }
-        i += 16;
-    }
-
-    while i < len {
-        crc = (crc >> 8) ^ CRC_TABLE[((crc ^ u16::from(data[i])) & 0xFF) as usize];
-        i += 1;
-    }
-
-    crc
-}
-*/
 
 #[inline(always)]
 pub fn compute_modbus_crc(data: &[u8]) -> u16 {
@@ -103,7 +61,6 @@ pub fn compute_modbus_crc(data: &[u8]) -> u16 {
 }
 
 pub fn compute_batch_crcs_optimized(data: &[u8], iterations: u64, _use_optimized: bool) -> u16 {
-    // Simple serial processing for small iteration counts
     if iterations < 100_000 {
         let mut crc = 0;
         for _ in 0..iterations {
@@ -112,7 +69,6 @@ pub fn compute_batch_crcs_optimized(data: &[u8], iterations: u64, _use_optimized
         return crc;
     }
 
-    // Parallel processing for larger iteration counts
     const BATCH_SIZE: u64 = 100_000;
     let num_batches = (iterations + BATCH_SIZE - 1) / BATCH_SIZE;
     

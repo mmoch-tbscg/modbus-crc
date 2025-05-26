@@ -6,7 +6,7 @@ fn main() -> Result<(), eframe::Error> {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([900.0, 700.0])
-            .with_title("🔧 CRC Modbus RTU Calculator"),
+            .with_title("CRC Modbus RTU Calculator"),
         ..Default::default()
     };
     
@@ -30,7 +30,7 @@ struct CrcApp {
 impl eframe::App for CrcApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("🔧 CRC Modbus RTU Calculator");
+            ui.heading("CRC Modbus RTU Calculator");
             ui.add_space(10.0);
             ui.separator();
             ui.add_space(15.0);
