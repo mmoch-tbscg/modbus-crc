@@ -3,44 +3,51 @@ use std::time::Instant;
 use rust_crc_project::{parse_hex_input, compute_batch_crcs_optimized};
 
 fn main() {
-    println!("Podaj sekwencję bajtów (HEX, spacja oddziela):");
-    let mut hex_input_str = String::new();
-    if let Err(e) = io::stdin().read_line(&mut hex_input_str) {
-        eprintln!("Błąd odczytu linii: {}", e);
-        return;
-    }
-
-    let data = match parse_hex_input(&hex_input_str) {
-        Ok(d) => d,
-        Err(e) => {
-            eprintln!("Błąd parsowania HEX: {}", e);
-            return;
+    loop {
+        println!("Podaj sekwencję bajtów (HEX, spacja oddziela) lub wpisz 'exit' aby zakończyć:");
+        let mut hex_input_str = String::new();
+        if let Err(e) = io::stdin().read_line(&mut hex_input_str) {
+            eprintln!("Błąd odczytu linii: {}", e);
+            continue;
         }
-    };
 
-    println!("Podaj liczbę powtórzeń (1 do 1000000000):");
-    let mut n_str = String::new();
-    if let Err(e) = io::stdin().read_line(&mut n_str) {
-        eprintln!("Błąd odczytu linii: {}", e);
-        return;
-    }
+        if hex_input_str.trim().eq_ignore_ascii_case("exit") {
+            break;
+        }
 
-    let n: u64 = match n_str.trim().parse() {
-        Ok(num) => {
-            if !(1..=1_000_000_000).contains(&num) {
-                eprintln!("Liczba powtórzeń poza zakresem.");
-                return;
+        let data = match parse_hex_input(&hex_input_str) {
+            Ok(d) => d,
+            Err(e) => {
+                eprintln!("Błąd parsowania HEX: {}", e);
+                continue;
             }
-            num
-        }
-        Err(e) => {
-            eprintln!("Błąd parsowania liczby powtórzeń: {}", e);
-            return;
-        }
-    };
+        };
 
-    println!("\n=== OBLICZANIE CRC ===");
-    run_crc_test(&data, n);
+        println!("Podaj liczbę powtórzeń (1 do 1000000000):");
+        let mut n_str = String::new();
+        if let Err(e) = io::stdin().read_line(&mut n_str) {
+            eprintln!("Błąd odczytu linii: {}", e);
+            continue;
+        }
+
+        let n: u64 = match n_str.trim().parse() {
+            Ok(num) => {
+                if !(1..=1_000_000_000).contains(&num) {
+                    eprintln!("Liczba powtórzeń poza zakresem.");
+                    continue;
+                }
+                num
+            }
+            Err(e) => {
+                eprintln!("Błąd parsowania liczby powtórzeń: {}", e);
+                continue;
+            }
+        };
+
+        println!("\n=== OBLICZANIE CRC ===");
+        run_crc_test(&data, n);
+        println!("\n");
+    }
 }
 
 fn run_crc_test(data: &[u8], n: u64) {
